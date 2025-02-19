@@ -1,25 +1,20 @@
 // src/App.tsx
 import React, { useMemo, useState } from 'react';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { CssBaseline, Container, Box } from '@mui/material';
+import { CssBaseline, Toolbar, Container, Box } from '@mui/material';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import AppHeader from './components/AppHeader';
 import TeacherDashboard from './pages/TeacherDashboard';
 import StudentDashboard from './pages/StudentDashboard';
 import WeeklyMaterialSidebar from './components/WeeklyMaterialSidebar';
-import LectureVideo from './pages/LectureVideo';
 
 const App: React.FC = () => {
-  const [darkMode, setDarkMode] = useState(true);
+  const [darkMode, setDarkMode] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [selectedMaterial, setSelectedMaterial] = useState<string>("");
 
-  const toggleDarkMode = () => {
-    setDarkMode((prev) => !prev);
-  };
-
-  const toggleDrawer = () => {
-    setDrawerOpen((prev) => !prev);
-  };
+  const toggleDarkMode = () => setDarkMode(prev => !prev);
+  const toggleDrawer = () => setDrawerOpen(prev => !prev);
 
   const theme = useMemo(
     () =>
@@ -38,42 +33,27 @@ const App: React.FC = () => {
       <CssBaseline />
       <Router>
         <AppHeader darkMode={darkMode} toggleDarkMode={toggleDarkMode} toggleDrawer={toggleDrawer} />
-        <WeeklyMaterialSidebar open={drawerOpen} onClose={toggleDrawer} />
-        {/* 
-          Create a scrollable Box that starts below the fixed header.
-          It has its own custom scrollbar styles based on the current theme.
-        */}
+        <WeeklyMaterialSidebar
+          open={drawerOpen}
+          onClose={toggleDrawer}
+          onSelectMaterial={(material: string) => setSelectedMaterial(material)}
+        />
+        {/* Offset for the fixed header */}
+        <Toolbar />
         <Box
           sx={{
-            mt: '64px', // Offset for header height (adjust if your header is taller)
-            height: 'calc(100vh - 64px)', // Ensure it fills the rest of the viewport
+            mt: '64px', // header offset; adjust if needed
+            height: 'calc(100vh - 64px)',
             overflowY: 'auto',
-            '&::-webkit-scrollbar': {
-              width: '12px',
-              height: '12px',
-            },
-            '&::-webkit-scrollbar-track': {
-              background:
-                theme.palette.mode === 'dark'
-                  ? theme.palette.grey[900]
-                  : theme.palette.grey[200],
-              borderRadius: '6px',
-            },
-            '&::-webkit-scrollbar-thumb': {
-              backgroundColor: theme.palette.primary.main,
-              borderRadius: '6px',
-              border: `3px solid ${
-                theme.palette.mode === 'dark'
-                  ? theme.palette.grey[900]
-                  : theme.palette.grey[200]
-              }`,
-            },
           }}
         >
           <Container sx={{ mt: 2 }}>
             <Routes>
               <Route path="/teacher" element={<TeacherDashboard />} />
-              <Route path="/student" element={<StudentDashboard />} />
+              <Route
+                path="/student"
+                element={<StudentDashboard selectedMaterial={selectedMaterial} />}
+              />
             </Routes>
           </Container>
         </Box>

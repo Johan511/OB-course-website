@@ -1,20 +1,40 @@
 // src/pages/StudentDashboard.tsx
 import React from 'react';
-import { Box, Toolbar, Typography } from '@mui/material';
-import StudentLayout from '../layouts/StudentLayout';
+import { Box, Typography } from '@mui/material';
 
+interface StudentDashboardProps {
+  selectedMaterial: string;
+}
 
-const StudentDashboard: React.FC = () => {
+const StudentDashboard: React.FC<StudentDashboardProps> = ({ selectedMaterial }) => {
   return (
-    <StudentLayout>
-      {/* Toolbar to ensure content is below the header */}
-      <Toolbar />
-      {/* Main content area */}
-      <Box sx={{ p: 3 }}>
-        <Typography variant="h4">Student Dashboard</Typography>
-        {/* Other student dashboard content goes here */}
-      </Box>
-    </StudentLayout>
+    <Box>
+      <Typography variant="h4" gutterBottom>
+        Student Dashboard
+      </Typography>
+      {selectedMaterial === "lectureVideo" && (
+        <Box sx={{ mt: 2 }}>
+          <Typography variant="h5" gutterBottom>
+            Lecture Video
+          </Typography>
+          <video controls style={{ width: '100%', maxWidth: '800px' }}>
+            <source src="/static-video.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </Box>
+      )}
+      {selectedMaterial === "assignments" && (
+        <Typography variant="body1">Assignments content goes here...</Typography>
+      )}
+      {selectedMaterial === "lectureNotes" && (
+        <Typography variant="body1">Lecture notes content goes here...</Typography>
+      )}
+      {selectedMaterial === "" && (
+        <Typography variant="body1">
+          Select an item from the sidebar to view its content.
+        </Typography>
+      )}
+    </Box>
   );
 };
 

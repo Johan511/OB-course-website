@@ -12,16 +12,20 @@ import {
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import NoteIcon from '@mui/icons-material/Note';
-import { Link } from 'react-router-dom';
 
 const drawerWidth = 240;
 
 interface WeeklyMaterialSidebarProps {
   open: boolean;
   onClose: () => void;
+  onSelectMaterial: (material: string) => void;
 }
 
-const WeeklyMaterialSidebar: React.FC<WeeklyMaterialSidebarProps> = ({ open, onClose }) => {
+const WeeklyMaterialSidebar: React.FC<WeeklyMaterialSidebarProps> = ({
+  open,
+  onClose,
+  onSelectMaterial,
+}) => {
   return (
     <Drawer
       anchor="left"
@@ -35,27 +39,22 @@ const WeeklyMaterialSidebar: React.FC<WeeklyMaterialSidebarProps> = ({ open, onC
         '& .MuiDrawer-paper': {
           width: drawerWidth,
           boxSizing: 'border-box',
-          top: '64px', // Offset so the drawer starts below the header
+          top: '64px', // ensures the drawer appears below the header
         },
       }}
     >
       <Divider />
       <List>
         <ListItem disablePadding>
-          <Link
-            to="/student/lecture-video"
-            style={{ textDecoration: 'none', color: 'inherit', width: '100%' }}
-          >
-            <ListItemButton>
-              <ListItemIcon>
-                <VideoLibraryIcon />
-              </ListItemIcon>
-              <ListItemText primary="Lecture Videos" />
-            </ListItemButton>
-          </Link>
+          <ListItemButton onClick={() => { onSelectMaterial("lectureVideo"); onClose(); }}>
+            <ListItemIcon>
+              <VideoLibraryIcon />
+            </ListItemIcon>
+            <ListItemText primary="Lecture Videos" />
+          </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
-          <ListItemButton>
+          <ListItemButton onClick={() => { onSelectMaterial("assignments"); onClose(); }}>
             <ListItemIcon>
               <AssignmentIcon />
             </ListItemIcon>
@@ -63,7 +62,7 @@ const WeeklyMaterialSidebar: React.FC<WeeklyMaterialSidebarProps> = ({ open, onC
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
-          <ListItemButton>
+          <ListItemButton onClick={() => { onSelectMaterial("lectureNotes"); onClose(); }}>
             <ListItemIcon>
               <NoteIcon />
             </ListItemIcon>
@@ -74,6 +73,5 @@ const WeeklyMaterialSidebar: React.FC<WeeklyMaterialSidebarProps> = ({ open, onC
     </Drawer>
   );
 };
-
 
 export default WeeklyMaterialSidebar;
