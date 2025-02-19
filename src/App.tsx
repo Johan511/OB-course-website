@@ -7,14 +7,22 @@ import AppHeader from './components/AppHeader';
 import TeacherDashboard from './pages/TeacherDashboard';
 import StudentDashboard from './pages/StudentDashboard';
 import WeeklyMaterialSidebar from './components/WeeklyMaterialSidebar';
+import TeacherActionsSidebar from './components/TeacherActionsSidebar';
 
 const App: React.FC = () => {
-  const [darkMode, setDarkMode] = useState(false);
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [selectedMaterial, setSelectedMaterial] = useState<string>("");
+  // Student states
+  const [studentDrawerOpen, setStudentDrawerOpen] = useState(false);
+  const [selectedStudentMaterial, setSelectedStudentMaterial] = useState<string>("");
+  const toggleStudentDrawer = () => setStudentDrawerOpen(prev => !prev);
 
+  // Teacher states
+  const [teacherDrawerOpen, setTeacherDrawerOpen] = useState(false);
+  const [selectedTeacherAction, setSelectedTeacherAction] = useState<string>("");
+  const toggleTeacherDrawer = () => setTeacherDrawerOpen(prev => !prev);
+
+  // Dark mode state
+  const [darkMode, setDarkMode] = useState(false);
   const toggleDarkMode = () => setDarkMode(prev => !prev);
-  const toggleDrawer = () => setDrawerOpen(prev => !prev);
 
   const theme = useMemo(
     () =>
@@ -32,13 +40,25 @@ const App: React.FC = () => {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
-        <AppHeader darkMode={darkMode} toggleDarkMode={toggleDarkMode} toggleDrawer={toggleDrawer} />
-        <WeeklyMaterialSidebar
-          open={drawerOpen}
-          onClose={toggleDrawer}
-          onSelectMaterial={(material: string) => setSelectedMaterial(material)}
+        <AppHeader 
+          darkMode={darkMode} 
+          toggleDarkMode={toggleDarkMode} 
+          toggleStudentDrawer={toggleStudentDrawer}
+          toggleTeacherDrawer={toggleTeacherDrawer}
         />
-        {/* Offset for the fixed header */}
+        {/* Sidebar for student dashboard */}
+        <WeeklyMaterialSidebar
+          open={studentDrawerOpen}
+          onClose={toggleStudentDrawer}
+          onSelectMaterial={(material: string) => setSelectedStudentMaterial(material)}
+        />
+        {/* Sidebar for teacher dashboard */}
+        <TeacherActionsSidebar
+          open={teacherDrawerOpen}
+          onClose={toggleTeacherDrawer}
+          onSelectAction={(action: string) => setSelectedTeacherAction(action)}
+        />
+        {/* Toolbar to offset the fixed header */}
         <Toolbar />
         <Box
           sx={{
@@ -49,11 +69,8 @@ const App: React.FC = () => {
         >
           <Container sx={{ mt: 2 }}>
             <Routes>
-              <Route path="/teacher" element={<TeacherDashboard />} />
-              <Route
-                path="/student"
-                element={<StudentDashboard selectedMaterial={selectedMaterial} />}
-              />
+              <Route path="/teacher" element={<TeacherDashboard selectedAction={selectedTeacherAction} />} />
+              <Route path="/student" element={<StudentDashboard selectedMaterial={selectedStudentMaterial} />} />
             </Routes>
           </Container>
         </Box>
