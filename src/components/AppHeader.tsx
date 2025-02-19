@@ -41,11 +41,6 @@ const AppHeader: React.FC<AppHeaderProps> = ({ darkMode, toggleDarkMode, toggleS
           control={<Switch checked={darkMode} onChange={toggleDarkMode} />}
           label={darkMode ? 'Dark Mode' : 'Light Mode'}
         />
-        {location.pathname === '/teacher' && (
-          <IconButton edge="end" color="inherit" onClick={toggleTeacherDrawer} sx={{ ml: 2 }}>
-            <SettingsIcon />
-          </IconButton>
-        )}
       </Toolbar>
     </AppBar>
   );
