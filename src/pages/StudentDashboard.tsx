@@ -35,9 +35,6 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ selectedMaterial })
           Select an item from the sidebar to view its content.
         </Typography>
       )}
-      <Box sx={{ position: 'fixed', bottom: 16, right: 16, zIndex: 1300 }}>
-        <ChatBot />
-      </Box>
     </Box>
   );
 };

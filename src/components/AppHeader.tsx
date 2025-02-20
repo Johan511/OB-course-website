@@ -8,18 +8,26 @@ import { Link, useLocation } from 'react-router-dom';
 interface AppHeaderProps {
   darkMode: boolean;
   toggleDarkMode: () => void;
-  toggleStudentDrawer: () => void;
+  toggleStudentDrawer?: () => void;
   toggleTeacherDrawer: () => void;
+  toggleCourseSidebar?: () => void;
 }
 
-const AppHeader: React.FC<AppHeaderProps> = ({ darkMode, toggleDarkMode, toggleStudentDrawer, toggleTeacherDrawer }) => {
+const AppHeader: React.FC<AppHeaderProps> = ({
+  darkMode,
+  toggleDarkMode,
+  toggleStudentDrawer,
+  toggleTeacherDrawer,
+  toggleCourseSidebar,
+}) => {
   const location = useLocation();
 
   return (
     <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
       <Toolbar>
-        {location.pathname === '/student' && (
-          <IconButton edge="start" color="inherit" onClick={toggleStudentDrawer} sx={{ mr: 2 }}>
+        {/* For course pages, show the course sidebar toggle on the left */}
+        {location.pathname.startsWith('/student/course') && toggleCourseSidebar && (
+          <IconButton edge="start" color="inherit" onClick={toggleCourseSidebar} sx={{ mr: 2 }}>
             <MenuIcon />
           </IconButton>
         )}
@@ -28,6 +36,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({ darkMode, toggleDarkMode, toggleS
             <MenuIcon />
           </IconButton>
         )}
+        {/* For student list page, show the student drawer toggle */}
         <Typography variant="h6" sx={{ flexGrow: 1 }}>
           Course Website
         </Typography>
