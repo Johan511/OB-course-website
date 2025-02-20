@@ -2,15 +2,23 @@
 import React, { useMemo, useState } from 'react';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { CssBaseline, Toolbar, Container, Box } from '@mui/material';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import AppHeader from './components/AppHeader';
 import TeacherDashboard from './pages/TeacherDashboard';
 import StudentCourses from './pages/StudentCourses';
 import CourseDashboard from './pages/CourseDashboard';
 import TeacherActionsSidebar from './components/TeacherActionsSidebar';
-import ScrollableContent from './components/ScrollableContent';
+import LoginPage from './pages/LoginPage';
+
+// ProtectedRoute ensures that a user is authenticated before rendering child routes.
+const ProtectedRoute: React.FC<{ isAuthenticated: boolean }> = ({ isAuthenticated }) => {
+  return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
+};
 
 const App: React.FC = () => {
+  // Global authentication state
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
   // Teacher states
   const [teacherDrawerOpen, setTeacherDrawerOpen] = useState(false);
   const [selectedTeacherAction, setSelectedTeacherAction] = useState<string>("");
@@ -44,20 +52,20 @@ const App: React.FC = () => {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
-        <AppHeader
-          darkMode={darkMode}
+        <AppHeader 
+          darkMode={darkMode} 
           toggleDarkMode={toggleDarkMode}
           toggleStudentDrawer={toggleStudentDrawer}
           toggleTeacherDrawer={toggleTeacherDrawer}
-          toggleCourseSidebar={toggleCourseSidebar} // Passed for course pages
+          toggleCourseSidebar={toggleCourseSidebar} // For course pages
         />
-        {/* Teacher sidebar */}
+        {/* Teacher actions sidebar */}
         <TeacherActionsSidebar
           open={teacherDrawerOpen}
           onClose={toggleTeacherDrawer}
           onSelectAction={(action: string) => setSelectedTeacherAction(action)}
         />
-        {/* Toolbar to offset the fixed header */}
+        {/* Offset for the fixed header */}
         <Toolbar />
         <Box
           sx={{
@@ -68,14 +76,21 @@ const App: React.FC = () => {
         >
           <Container sx={{ mt: 2 }}>
             <Routes>
-              <Route path="/teacher" element={<TeacherDashboard selectedAction={selectedTeacherAction} />} />
-              <Route path="/student" element={<StudentCourses />} />
-              <Route path="/student/course/:courseId" element={
-                <CourseDashboard
-                  courseSidebarOpen={courseSidebarOpen}
-                  toggleCourseSidebar={toggleCourseSidebar}
-                />
-              } />
+              {/* Public Login Route */}
+              <Route path="/login" element={<LoginPage onLogin={() => setIsAuthenticated(true)} />} />
+              {/* Protected Routes */}
+              <Route element={<ProtectedRoute isAuthenticated={isAuthenticated} />}>
+                <Route path="/teacher" element={<TeacherDashboard selectedAction={selectedTeacherAction} />} />
+                <Route path="/student" element={<StudentCourses />} />
+                <Route path="/student/course/:courseId" element={
+                  <CourseDashboard 
+                    courseSidebarOpen={courseSidebarOpen} 
+                    toggleCourseSidebar={toggleCourseSidebar} 
+                  />
+                } />
+                {/* Redirect any unknown paths to /student */}
+                <Route path="*" element={<Navigate to="/student" replace />} />
+              </Route>
             </Routes>
           </Container>
         </Box>

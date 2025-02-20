@@ -1,10 +1,25 @@
 // src/components/ChatBot.tsx
 import React, { useState } from 'react';
-import { Paper, Typography, TextField, Button, Box } from '@mui/material';
+import { Paper, Typography, TextField, Button, Box, Chip } from '@mui/material';
 
 const ChatBot: React.FC = () => {
+  const likelyPrompts = [
+    "What is today's assignment?",
+    "Explain today's lecture",
+    "I need help with my assignment",
+    "What are the key points from the lecture?",
+    "Can you summarize the lecture?"
+  ];
+
   const [messages, setMessages] = useState<string[]>([]);
   const [input, setInput] = useState<string>('');
+
+  const handlePromptClick = (prompt: string) => {
+    // Populate the input field with the selected prompt.
+    setInput(prompt);
+    // Optionally, you could auto-send the prompt by calling handleSend()
+    // handleSend();
+  };
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -31,6 +46,24 @@ const ChatBot: React.FC = () => {
       <Typography variant="h6" gutterBottom>
         AI Bot Assistance
       </Typography>
+      {/* Likely Prompts: Stacked vertically */}
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}>
+        {likelyPrompts.map((prompt, index) => (
+          <Chip 
+            key={index} 
+            label={prompt} 
+            onClick={() => handlePromptClick(prompt)}
+          />
+        ))}
+      </Box>
+      {/* Chat conversation */}
+      <Box sx={{ maxHeight: 200, overflowY: 'auto', mb: 2 }}>
+        {messages.map((msg, index) => (
+          <Typography key={index} variant="body2">
+            {msg}
+          </Typography>
+        ))}
+      </Box>
       <Box sx={{ maxHeight: 200, overflowY: 'auto', mb: 2 }}>
         {messages.map((msg, index) => (
           <Typography key={index} variant="body2">
