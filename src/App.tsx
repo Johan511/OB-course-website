@@ -1,5 +1,6 @@
 // src/App.tsx
 import React, { useMemo, useState } from 'react';
+import Cookies from 'js-cookie';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { CssBaseline, Toolbar, Container, Box } from '@mui/material';
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
@@ -16,8 +17,22 @@ const ProtectedRoute: React.FC<{ isAuthenticated: boolean }> = ({ isAuthenticate
 };
 
 const App: React.FC = () => {
-  // Global authentication state
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  // Read authentication state from cookies
+  const [authToken, setAuthToken] = useState<string | null>(Cookies.get('token') || null);
+  const [userRole, setUserRole] = useState<string | null>(Cookies.get('role') || null);
+
+  const isAuthenticated = !!authToken;
+
+  // Function to update authentication state after login
+  const handleLogin = () => {
+    const token = Cookies.get('token');
+    const role = Cookies.get('role');
+    
+    if (token && role) {
+        setAuthToken(token);
+        setUserRole(role);
+    }
+  };
 
   // Teacher states
   const [teacherDrawerOpen, setTeacherDrawerOpen] = useState(false);
@@ -77,7 +92,7 @@ const App: React.FC = () => {
           <Container sx={{ mt: 2 }}>
             <Routes>
               {/* Public Login Route */}
-              <Route path="/login" element={<LoginPage onLogin={() => setIsAuthenticated(true)} />} />
+              <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
               {/* Protected Routes */}
               <Route element={<ProtectedRoute isAuthenticated={isAuthenticated} />}>
                 <Route path="/teacher" element={<TeacherDashboard selectedAction={selectedTeacherAction} />} />

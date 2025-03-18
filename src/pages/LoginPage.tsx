@@ -1,5 +1,6 @@
 // src/pages/LoginPage.tsx
 import React, { useState } from 'react';
+import axios from 'axios';
 import { Container, Paper, Tabs, Tab, Box, TextField, Button, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
@@ -12,20 +13,42 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
   const [role, setRole] = useState<'student' | 'teacher'>('student');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleRoleChange = (event: React.SyntheticEvent, newValue: 'student' | 'teacher') => {
     setRole(newValue);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Replace with your login API integration logic
-    console.log(`Logging in as ${role} with email: ${email}`);
-    // Mark as authenticated and navigate to the protected route.
-    onLogin();
-    // Redirect to a protected page. For example, if it's a student login, redirect to /student.
-    navigate(role === 'student' ? '/student' : '/teacher');
+    setError(null);
+
+    const selectedRole = role;
+    setLoading(true);
+
+    try {
+      const response = await axios.post('http://localhost:5000/api/login', {
+        email,
+        password,
+        role: selectedRole
+      }, { withCredentials: true });
+
+      const { message, success } = response.data;
+
+      if (success) {
+        onLogin();
+        navigate(selectedRole === 'student' ? '/student' : '/teacher');
+      } else {
+        setError(message);
+      }
+
+    } catch (error) {
+      setError("Invalid email or password. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -54,8 +77,16 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
-            Login as {role.charAt(0).toUpperCase() + role.slice(1)}
+          {error && <Typography color="error">{error}</Typography>}
+          <Button 
+            type="submit" 
+            variant="contained" 
+            color="primary" 
+            fullWidth 
+            sx={{ mt: 2 }}
+            disabled={loading}
+          >
+            {loading ? 'Logging in...' : `Login as ${role.charAt(0).toUpperCase() + role.slice(1)}`}
           </Button>
         </Box>
         <Typography variant="body2" align="center" sx={{ mt: 2 }}>
