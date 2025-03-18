@@ -4,11 +4,10 @@ import { Container, Paper, Tabs, Tab, Box, TextField, Button, Typography } from 
 import { useNavigate } from 'react-router-dom';
 
 interface LoginPageProps {
-  onLogin: () => void;
+  onLogin: (token: string, role: string) => void;
 }
 
 const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
-  // Manage the role selection as either 'student' or 'teacher'
   const [role, setRole] = useState<'student' | 'teacher'>('student');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -18,14 +17,27 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
     setRole(newValue);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Replace with your login API integration logic
-    console.log(`Logging in as ${role} with email: ${email}`);
-    // Mark as authenticated and navigate to the protected route.
-    onLogin();
-    // Redirect to a protected page. For example, if it's a student login, redirect to /student.
-    navigate(role === 'student' ? '/student' : '/teacher');
+    try {
+      const response = await fetch('http://localhost:5000/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, role }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        // Store token in localStorage and update global state
+        localStorage.setItem('token', data.token);
+        onLogin(data.token, data.role);
+        navigate(role === 'student' ? '/student' : '/teacher');
+      } else {
+        alert(data.message || 'Login failed');
+      }
+    } catch (error) {
+      console.error('Error during login:', error);
+      alert('An error occurred. Please try again.');
+    }
   };
 
   return (
@@ -60,8 +72,8 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
         </Box>
         <Typography variant="body2" align="center" sx={{ mt: 2 }}>
           {role === 'student'
-            ? "Not registered? Contact your institution."
-            : "Need an account? Contact your administrator."}
+            ? 'Not registered? Contact your institution.'
+            : 'Need an account? Contact your administrator.'}
         </Typography>
       </Paper>
     </Container>

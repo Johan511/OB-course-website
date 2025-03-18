@@ -1,5 +1,5 @@
 // src/App.tsx
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { CssBaseline, Toolbar, Container, Box } from '@mui/material';
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
@@ -17,7 +17,9 @@ const ProtectedRoute: React.FC<{ isAuthenticated: boolean }> = ({ isAuthenticate
 
 const App: React.FC = () => {
   // Global authentication state
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [authToken, setAuthToken] = useState<string | null>(null);
+  const [userRole, setUserRole] = useState<string | null>(null);
 
   // Teacher states
   const [teacherDrawerOpen, setTeacherDrawerOpen] = useState(false);
@@ -36,6 +38,17 @@ const App: React.FC = () => {
   const [darkMode, setDarkMode] = useState(false);
   const toggleDarkMode = () => setDarkMode(prev => !prev);
 
+  // On mount, check if a token is stored in localStorage
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      setIsAuthenticated(true);
+      setAuthToken(token);
+      // Optionally, decode token to get user role
+    }
+  }, []);
+
   const theme = useMemo(
     () =>
       createTheme({
@@ -52,8 +65,8 @@ const App: React.FC = () => {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
-        <AppHeader 
-          darkMode={darkMode} 
+        <AppHeader
+          darkMode={darkMode}
           toggleDarkMode={toggleDarkMode}
           toggleStudentDrawer={toggleStudentDrawer}
           toggleTeacherDrawer={toggleTeacherDrawer}
@@ -83,9 +96,9 @@ const App: React.FC = () => {
                 <Route path="/teacher" element={<TeacherDashboard selectedAction={selectedTeacherAction} />} />
                 <Route path="/student" element={<StudentCourses />} />
                 <Route path="/student/course/:courseId" element={
-                  <CourseDashboard 
-                    courseSidebarOpen={courseSidebarOpen} 
-                    toggleCourseSidebar={toggleCourseSidebar} 
+                  <CourseDashboard
+                    courseSidebarOpen={courseSidebarOpen}
+                    toggleCourseSidebar={toggleCourseSidebar}
                   />
                 } />
                 {/* Redirect any unknown paths to /student */}
