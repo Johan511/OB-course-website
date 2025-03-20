@@ -1,15 +1,17 @@
 // src/pages/StudentCourses.tsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Box, Typography, Card, CardContent, CardActionArea } from '@mui/material';
 import { Link } from 'react-router-dom';
 
-const StudentCourses: React.FC = () => {
-    // Sample course data
-    const courses = [
-        { id: 'course1', name: 'Introduction to Biology', description: 'Learn the basics of biology.' },
-        { id: 'course2', name: 'Advanced Mathematics', description: 'Deep dive into mathematical theories.' },
-        { id: 'course3', name: 'Modern History', description: 'Explore modern historical events.' },
-    ];
+interface StudentCoursesProps {
+    courses: { id: string, name: string, description: string }[];
+    fetchCourses: () => void;
+}
+
+const StudentCourses: React.FC<StudentCoursesProps> = ({ courses, fetchCourses }) => {
+    useEffect(() => {
+        fetchCourses();
+    }, [fetchCourses]);
 
     return (
         <Box>

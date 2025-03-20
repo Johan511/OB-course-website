@@ -5,7 +5,7 @@ import { Container, Paper, Tabs, Tab, Box, TextField, Button, Typography } from 
 import { useNavigate } from 'react-router-dom';
 
 interface LoginPageProps {
-  onLogin: () => void;
+  onLogin: (role: string) => void;
 }
 
 const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
@@ -38,7 +38,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
       const { message, success } = response.data;
 
       if (success) {
-        onLogin();
+        onLogin(selectedRole);
         navigate(selectedRole === 'student' ? '/student' : '/teacher');
       } else {
         setError(message);

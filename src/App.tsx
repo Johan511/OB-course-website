@@ -1,6 +1,6 @@
 // src/App.tsx
 import React, { useMemo, useState } from 'react';
-import Cookies from 'js-cookie';
+import axios from 'axios';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { CssBaseline, Toolbar, Container, Box } from '@mui/material';
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
@@ -17,21 +17,25 @@ const ProtectedRoute: React.FC<{ isAuthenticated: boolean }> = ({ isAuthenticate
 };
 
 const App: React.FC = () => {
-  // Read authentication state from cookies
-  const [authToken, setAuthToken] = useState<string | null>(Cookies.get('token') || null);
-  const [userRole, setUserRole] = useState<string | null>(Cookies.get('role') || null);
+  const [userRole, setUserRole] = useState<string | null>(null);
+  const isAuthenticated = !!userRole;
 
-  const isAuthenticated = !!authToken;
+  const [courses, setCourses] = useState<{ id: string, name: string, description: string }[]>([]);
+
+  const fetchCourses = async () => {
+    if (courses.length == 0) {
+      try {
+        const response = await axios.get('http://localhost:5000/api/courses', { withCredentials: true });
+        setCourses(response.data);
+      } catch (error) {
+        console.error('Error fetching courses:', error);
+      }
+    }
+  };
 
   // Function to update authentication state after login
-  const handleLogin = () => {
-    const token = Cookies.get('token');
-    const role = Cookies.get('role');
-    
-    if (token && role) {
-        setAuthToken(token);
-        setUserRole(role);
-    }
+  const handleLogin = (role: string) => {
+    setUserRole(role);
   };
 
   // Teacher states
@@ -96,7 +100,7 @@ const App: React.FC = () => {
               {/* Protected Routes */}
               <Route element={<ProtectedRoute isAuthenticated={isAuthenticated} />}>
                 <Route path="/teacher" element={<TeacherDashboard selectedAction={selectedTeacherAction} />} />
-                <Route path="/student" element={<StudentCourses />} />
+                <Route path="/student" element={<StudentCourses courses={courses} fetchCourses={fetchCourses} />} />
                 <Route path="/student/course/:courseId" element={
                   <CourseDashboard 
                     courseSidebarOpen={courseSidebarOpen} 
