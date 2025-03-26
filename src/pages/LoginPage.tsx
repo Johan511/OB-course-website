@@ -4,7 +4,7 @@ import { Container, Paper, Tabs, Tab, Box, TextField, Button, Typography } from 
 import { useNavigate } from 'react-router-dom';
 
 interface LoginPageProps {
-  onLogin: (token: string, role: string) => void;
+  onLogin: (token: string) => void;
 }
 
 const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
@@ -24,12 +24,14 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, role }),
+        credentials: "include"
       });
       const data = await response.json();
       if (response.ok) {
         // Store token in localStorage and update global state
         localStorage.setItem('token', data.token);
-        onLogin(data.token, data.role);
+        console.log(data.token);
+        onLogin(data.token);
         navigate(role === 'student' ? '/student' : '/teacher');
       } else {
         alert(data.message || 'Login failed');

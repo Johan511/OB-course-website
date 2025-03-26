@@ -1,5 +1,5 @@
 // src/App.tsx
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState } from 'react';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { CssBaseline, Toolbar, Container, Box } from '@mui/material';
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
@@ -9,17 +9,17 @@ import StudentCourses from './pages/StudentCourses';
 import CourseDashboard from './pages/CourseDashboard';
 import TeacherActionsSidebar from './components/TeacherActionsSidebar';
 import LoginPage from './pages/LoginPage';
+import { useCookies, CookiesProvider } from "react-cookie";
 
 // ProtectedRoute ensures that a user is authenticated before rendering child routes.
-const ProtectedRoute: React.FC<{ isAuthenticated: boolean }> = ({ isAuthenticated }) => {
-  return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
+const ProtectedRoute: React.FC<{ jwt: any }> = ({ jwt }) => {
+  console.log(jwt); 
+  return jwt.access_token_cookie ? <Outlet /> : <Navigate to="/login" replace />;
 };
 
 const App: React.FC = () => {
   // Global authentication state
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [authToken, setAuthToken] = useState<string | null>(null);
-  const [userRole, setUserRole] = useState<string | null>(null);
+  const [jwt, setJwt] = useCookies(['access_token_cookie']);
 
   // Teacher states
   const [teacherDrawerOpen, setTeacherDrawerOpen] = useState(false);
@@ -39,15 +39,6 @@ const App: React.FC = () => {
   const toggleDarkMode = () => setDarkMode(prev => !prev);
 
   // On mount, check if a token is stored in localStorage
-
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      setIsAuthenticated(true);
-      setAuthToken(token);
-      // Optionally, decode token to get user role
-    }
-  }, []);
 
   const theme = useMemo(
     () =>
@@ -90,9 +81,9 @@ const App: React.FC = () => {
           <Container sx={{ mt: 2 }}>
             <Routes>
               {/* Public Login Route */}
-              <Route path="/login" element={<LoginPage onLogin={() => setIsAuthenticated(true)} />} />
+              <Route path="/login" element={<LoginPage onLogin={(token) => console.log(jwt)} />} />
               {/* Protected Routes */}
-              <Route element={<ProtectedRoute isAuthenticated={isAuthenticated} />}>
+              <Route element={<ProtectedRoute jwt={jwt} />}>
                 <Route path="/teacher" element={<TeacherDashboard selectedAction={selectedTeacherAction} />} />
                 <Route path="/student" element={<StudentCourses />} />
                 <Route path="/student/course/:courseId" element={
@@ -112,4 +103,10 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+export default function Root(): React.ReactElement {
+  return (
+    <CookiesProvider defaultSetOptions={{ path: '/' }}>
+      <App />
+    </CookiesProvider>
+  );
+}
