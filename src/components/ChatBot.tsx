@@ -15,10 +15,7 @@ const ChatBot: React.FC = () => {
   const [input, setInput] = useState<string>('');
 
   const handlePromptClick = (prompt: string) => {
-    // Populate the input field with the selected prompt.
     setInput(prompt);
-    // Optionally, you could auto-send the prompt by calling handleSend()
-    // handleSend();
   };
 
   const handleSend = async () => {
@@ -27,6 +24,9 @@ const ChatBot: React.FC = () => {
     // Add the user message to the chat
     const newMessages = [...messages, `User: ${input}`];
     setMessages(newMessages);
+
+    const largeResponse = 'Lorem ipsum '.repeat(1000); // Repeat "Lorem ipsum " 1000 times
+    setMessages([...newMessages, largeResponse]);
 
     // Here you would typically make an API call to your AI service:
     const response = await fetch('/api/chatbot', {
@@ -37,7 +37,9 @@ const ChatBot: React.FC = () => {
     const data = await response.json();
 
     // Append the AI bot response to the chat
-    setMessages([...newMessages, `Bot: ${data.reply}`]);
+    // Simulate a very large string response from the AI bot
+    // const largeResponse = 'Lorem ipsum '.repeat(1000); // Repeat "Lorem ipsum " 1000 times
+    setMessages([...newMessages, `Bot: largeResponse`]);
     setInput('');
   };
 
@@ -49,22 +51,15 @@ const ChatBot: React.FC = () => {
       {/* Likely Prompts: Stacked vertically */}
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}>
         {likelyPrompts.map((prompt, index) => (
-          <Chip 
-            key={index} 
-            label={prompt} 
+          <Chip
+            key={index}
+            label={prompt}
             onClick={() => handlePromptClick(prompt)}
           />
         ))}
       </Box>
       {/* Chat conversation */}
-      <Box sx={{ maxHeight: 200, overflowY: 'auto', mb: 2 }}>
-        {messages.map((msg, index) => (
-          <Typography key={index} variant="body2">
-            {msg}
-          </Typography>
-        ))}
-      </Box>
-      <Box sx={{ maxHeight: 200, overflowY: 'auto', mb: 2 }}>
+      <Box sx={{ maxHeight: 400, maxWidth: 800, overflowY: 'auto', mb: 2 }}>
         {messages.map((msg, index) => (
           <Typography key={index} variant="body2">
             {msg}

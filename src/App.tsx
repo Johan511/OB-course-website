@@ -13,7 +13,6 @@ import { useCookies, CookiesProvider } from "react-cookie";
 
 // ProtectedRoute ensures that a user is authenticated before rendering child routes.
 const ProtectedRoute: React.FC<{ jwt: any }> = ({ jwt }) => {
-  console.log(jwt); 
   return jwt.access_token_cookie ? <Outlet /> : <Navigate to="/login" replace />;
 };
 
@@ -81,7 +80,7 @@ const App: React.FC = () => {
           <Container sx={{ mt: 2 }}>
             <Routes>
               {/* Public Login Route */}
-              <Route path="/login" element={<LoginPage onLogin={(token) => console.log(jwt)} />} />
+              <Route path="/login" element={<LoginPage onLogin={(token) => jwt} />} />
               {/* Protected Routes */}
               <Route element={<ProtectedRoute jwt={jwt} />}>
                 <Route path="/teacher" element={<TeacherDashboard selectedAction={selectedTeacherAction} />} />

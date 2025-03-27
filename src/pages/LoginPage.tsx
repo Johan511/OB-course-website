@@ -30,7 +30,6 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
       if (response.ok) {
         // Store token in localStorage and update global state
         localStorage.setItem('token', data.token);
-        console.log(data.token);
         onLogin(data.token);
         navigate(role === 'student' ? '/student' : '/teacher');
       } else {
