@@ -29,17 +29,15 @@ const ChatBot: React.FC = () => {
     setMessages([...newMessages, largeResponse]);
 
     // Here you would typically make an API call to your AI service:
-    const response = await fetch('/api/chatbot', {
+    const response = await fetch('http://localhost:5000/api/rag/query', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: input })
+      body: JSON.stringify({ query: input })
     });
     const data = await response.json();
 
     // Append the AI bot response to the chat
-    // Simulate a very large string response from the AI bot
-    // const largeResponse = 'Lorem ipsum '.repeat(1000); // Repeat "Lorem ipsum " 1000 times
-    setMessages([...newMessages, `Bot: largeResponse`]);
+    setMessages([...newMessages, `Bot: ${data.answer}`]);
     setInput('');
   };
 
