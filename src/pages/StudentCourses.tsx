@@ -22,7 +22,7 @@ const CoursesComponent = () => {
             justifyContent: 'center'
         }}
     >
-        {courses.map((course) => (
+        {courses && courses.map((course) => (
             <Card
                 key={course.id}
                 sx={{
