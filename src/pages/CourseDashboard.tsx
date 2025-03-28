@@ -1,7 +1,7 @@
 // src/pages/CourseDashboard.tsx
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Box, Toolbar, Typography } from '@mui/material';
+import { Box, Toolbar, Typography, RadioGroup, FormControlLabel, Radio, Button } from '@mui/material';
 import CourseWeeklySidebar from '../components/CourseWeeklySidebar';
 import ChatBot from '../components/ChatBot';
 
@@ -14,7 +14,21 @@ const CourseDashboard: React.FC<CourseDashboardProps> = ({ courseSidebarOpen, to
     const { courseId } = useParams<{ courseId: string }>();
     const [selectedMaterial, setSelectedMaterial] = useState<string>("");
     const [courseContent, setCourseContent] = useState<any>({});
-    const [expandedAssignments, setExpandedAssignments] = useState<{ [key: string]: boolean }>({});
+    const [expandedAssignments, setExpandedAssignments] = useState<string>("");
+    const [selectedAnswers, setSelectedAnswers] = useState<{ [key: number]: string }>({});
+
+    const handleOptionChange = (event: React.ChangeEvent<HTMLInputElement>, index: number) => {
+        setSelectedAnswers((prev) => ({
+            ...prev,
+            [index]: event.target.value,
+        }));
+    };
+
+    const handleSubmit = () => {
+        console.log("Submitted Answers:", selectedAnswers);
+        // Add further submission logic here (e.g., API call, validation, etc.)
+    };
+
 
 
     useEffect(() => {
@@ -22,7 +36,7 @@ const CourseDashboard: React.FC<CourseDashboardProps> = ({ courseSidebarOpen, to
             .then((response) => response.json())
             .then((json) => { setCourseContent(json); console.log(json) })
             .catch((error) => console.error("Error fetching data:", error));
-    }, []); // Empty dependency array = runs only once on page load 
+    }, [courseId]);
 
     return (
         <Box>
@@ -56,10 +70,13 @@ const CourseDashboard: React.FC<CourseDashboardProps> = ({ courseSidebarOpen, to
                     <Box sx={{ mt: 2 }}>
                         {courseContent.assignments && courseContent.assignments.map((assignment: any) => {
                             const toggleExpanded = (id: string) => {
-                                setExpandedAssignments((prev) => ({
-                                    ...prev,
-                                    [id]: !prev[id],
-                                }));
+                                setSelectedAnswers({});
+                                if (expandedAssignments === id) {
+                                    setExpandedAssignments("");
+                                }
+                                else {
+                                    setExpandedAssignments(id);
+                                }
                             };
 
                             return (
@@ -71,37 +88,35 @@ const CourseDashboard: React.FC<CourseDashboardProps> = ({ courseSidebarOpen, to
                                     >
                                         {assignment.title}
                                     </Typography>
-                                    {expandedAssignments[assignment.id] && (
-                                        <Typography variant="body1" sx={{ mt: 1 }}>
-                                            {
-                                                assignment.content && assignment.content.map((content: any) => {
-                                                    {
-                                                        return (
-                                                            <Typography
-                                                                sx={{ cursor: 'pointer', textDecoration: 'underline' }}
-                                                            >
-                                                                {content.question}
-                                                                {
-                                                                    content.options && content.options.map((option: any) => {
-                                                                        {
-                                                                            return (
-                                                                                <Typography
-                                                                                    sx={{ mt: 1 }}
-                                                                                >
-                                                                                    {option}
-                                                                                </Typography>
-                                                                            )
-                                                                        }
-                                                                    })
-                                                                }
-
-                                                            </Typography>
-                                                        )
-                                                    }
-                                                })
-                                            }
-                                        </Typography>
+                                    {expandedAssignments === assignment.id && (
+                                        <Box sx={{ mt: 1 }}>
+                                            {assignment.content?.map((content: any, index: number) => (
+                                                <Box key={index} sx={{ mb: 2, p: 2, border: '1px solid #ccc', borderRadius: '8px' }}>
+                                                    <Typography variant="h6" gutterBottom>
+                                                        {content.question}
+                                                    </Typography>
+                                                    <RadioGroup
+                                                        name={`question-${index}`}
+                                                        value={selectedAnswers[index] || ''}
+                                                        onChange={(event) => handleOptionChange(event, index)}
+                                                    >
+                                                        {content.options?.map((option: string, optIndex: number) => (
+                                                            <FormControlLabel
+                                                                key={optIndex}
+                                                                value={option}
+                                                                control={<Radio />}
+                                                                label={option}
+                                                            />
+                                                        ))}
+                                                    </RadioGroup>
+                                                </Box>
+                                            ))}
+                                            <Button variant="contained" color="primary" onClick={handleSubmit} sx={{ mt: 2 }}>
+                                                Submit
+                                            </Button>
+                                        </Box>
                                     )}
+
                                 </Box>
                             );
                         })}
