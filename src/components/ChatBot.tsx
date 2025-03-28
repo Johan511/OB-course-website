@@ -1,6 +1,7 @@
 // src/components/ChatBot.tsx
 import React, { useState } from 'react';
 import { Paper, Typography, TextField, Button, Box, Chip } from '@mui/material';
+// import { useLocation } from "react-router-dom";
 
 const ChatBot: React.FC = () => {
   const likelyPrompts = [
@@ -20,25 +21,22 @@ const ChatBot: React.FC = () => {
 
   const handleSend = async () => {
     if (!input.trim()) return;
-
+    setInput('');
     // Add the user message to the chat
     const newMessages = [...messages, `User: ${input}`];
     setMessages(newMessages);
-
-    const largeResponse = 'Lorem ipsum '.repeat(1000); // Repeat "Lorem ipsum " 1000 times
-    setMessages([...newMessages, largeResponse]);
 
     // Here you would typically make an API call to your AI service:
     const response = await fetch('http://localhost:5000/api/rag/query', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query: input })
+      body: JSON.stringify({ query: input, context: ""})
     });
     const data = await response.json();
 
     // Append the AI bot response to the chat
-    setMessages([...newMessages, `Bot: ${data.answer}`]);
-    setInput('');
+    const botMessage = data.answer ? `Bot: ${data.answer}` : `Bot: Error - ${data.error}`;
+    setMessages([...newMessages, botMessage]);
   };
 
   return (
