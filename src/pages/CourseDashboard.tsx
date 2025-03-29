@@ -66,10 +66,19 @@ const CourseDashboard: React.FC<CourseDashboardProps> = ({ courseSidebarOpen, to
                         <Typography variant="h5" gutterBottom>
                             Lecture Video
                         </Typography>
-                        <video controls style={{ width: '100%', maxWidth: '800px' }}>
-                            <source src="/static-video.mp4" type="video/mp4" />
-                            Your browser does not support the video tag.
-                        </video>
+                        {/* Map course content */}
+                        {courseContent.lectures && courseContent.lectures.map((lecture: any) => (
+                            <Box key={lecture.id} sx={{ mb: 2 }}>
+                                <Typography variant="h6">{lecture.title}</Typography>
+                                <video controls style={{ width: '100%', maxWidth: '800px' }}>
+                                    <source src={lecture.video_url} type="video/mp4" />
+                                    Your browser does not support the video tag.
+                                </video>
+                                <Typography variant="body1" sx={{ mt: 1 }}>
+                                    {lecture.transcript}
+                                </Typography>
+                            </Box>
+                        ))}
                     </Box>
                 )}
                 {selectedMaterial === "assignments" && (

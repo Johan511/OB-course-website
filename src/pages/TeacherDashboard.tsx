@@ -49,7 +49,7 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ selectedAction }) =
         <Typography variant="body1">Upload Lectures form goes here.</Typography>
       )}
       {selectedAction === "chatHistory" && (
-        <Typography variant="body1">Chat history goes here.</Typography>
+        <Typography variant="body1"> {chatHistory} </Typography>
       )}
       {selectedAction === "" && (
         <Typography variant="body1">
