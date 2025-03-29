@@ -65,6 +65,14 @@ const TeacherActionsSidebar: React.FC<TeacherActionsSidebarProps> = ({ open, onC
             <ListItemText primary="Upload Lectures" />
           </ListItemButton>
         </ListItem>
+        <ListItem disablePadding>
+          <ListItemButton onClick={() => { onSelectAction("chatHistory"); onClose(); }}>
+            <ListItemIcon>
+              <VideoLibraryIcon />
+            </ListItemIcon>
+            <ListItemText primary="LLM Student Chat Summary" />
+          </ListItemButton>
+        </ListItem>
       </List>
     </Drawer>
   );

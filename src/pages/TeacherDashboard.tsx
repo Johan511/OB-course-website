@@ -7,6 +7,20 @@ interface TeacherDashboardProps {
   selectedAction: string;
 }
 
+const fetchChatHistory = async () => {
+  try {
+    const response = await fetch('/api/chathistory');
+    if (!response.ok) {
+      throw new Error('Failed to fetch chat history');
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching chat history:', error);
+    return null;
+  }
+};
+
 const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ selectedAction }) => {
   return (
     <Box>
@@ -21,6 +35,9 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ selectedAction }) =
       )}
       {selectedAction === "uploadLectures" && (
         <Typography variant="body1">Upload Lectures form goes here.</Typography>
+      )}
+      {selectedAction === "chatHistory" && (
+        <Typography variant="body1">Chat history goes here.</Typography>
       )}
       {selectedAction === "" && (
         <Typography variant="body1">
