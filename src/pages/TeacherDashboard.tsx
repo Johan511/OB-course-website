@@ -21,14 +21,40 @@ const fetchChatHistory = async () => {
   }
 };
 
+const fetchSubmissions = async () => {
+  try {
+    const response = await fetch('http://localhost:5000/api/submissions/0');
+    if (!response.ok) {
+      throw new Error('Failed to fetch submissions');
+    }
+    const data = await response.json();
+    console.log(data)
+    return data;
+  } catch (error) {
+    console.error('Error fetching submissions:', error);
+    return null;
+  }
+};
+
 const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ selectedAction }) => {
   const [chatHistory, setChatHistory] = React.useState<string>("");
+  const [submissions, setSubmissions] = React.useState<any[]>([]);
 
   React.useEffect(() => {
     const fetchData = async () => {
       const history = await fetchChatHistory();
       if (history) {
         setChatHistory(history);
+      }
+    };
+    fetchData();
+  }, []);
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      const data = await fetchSubmissions();
+      if (data) {
+        setSubmissions(data);
       }
     };
     fetchData();
@@ -43,7 +69,7 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ selectedAction }) =
         <Typography variant="body1">Upload Assignment form goes here.</Typography>
       )}
       {selectedAction === "viewSubmissions" && (
-        <Typography variant="body1">Submissions list goes here.</Typography>
+        <Typography variant="body1">{submissions}</Typography>
       )}
       {selectedAction === "uploadLectures" && (
         <Typography variant="body1">Upload Lectures form goes here.</Typography>

@@ -26,13 +26,23 @@ const CourseDashboard: React.FC<CourseDashboardProps> = ({ courseSidebarOpen, to
 
     const handleSubmit = (assignmentId: string) => {
         console.log("Submitted Answers:", selectedAnswers);
-        const submission = {
-            courseId: courseId,
-            assignmentId: assignmentId,
-            answers: selectedAnswers,
-        };
 
-        //  TODO: Submit the answers to the server
+        fetch(`http://localhost:5000/api/submit_assignment/${courseId}/${assignmentId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(selectedAnswers),
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log("Submission successful:", data);
+                setSelectedAnswers({});
+                setExpandedAssignments("");
+            })
+            .catch((error) => {
+                console.error("Error submitting assignment:", error);
+            });
     };
 
 
