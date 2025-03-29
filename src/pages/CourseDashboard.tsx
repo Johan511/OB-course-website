@@ -24,9 +24,15 @@ const CourseDashboard: React.FC<CourseDashboardProps> = ({ courseSidebarOpen, to
         }));
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = (assignmentId: string) => {
         console.log("Submitted Answers:", selectedAnswers);
-        // Add further submission logic here (e.g., API call, validation, etc.)
+        const submission = {
+            courseId: courseId,
+            assignmentId: assignmentId,
+            answers: selectedAnswers,
+        };
+
+        //  TODO: Submit the answers to the server
     };
 
 
@@ -111,7 +117,7 @@ const CourseDashboard: React.FC<CourseDashboardProps> = ({ courseSidebarOpen, to
                                                     </RadioGroup>
                                                 </Box>
                                             ))}
-                                            <Button variant="contained" color="primary" onClick={handleSubmit} sx={{ mt: 2 }}>
+                                            <Button variant="contained" color="primary" onClick={() => handleSubmit(assignment.id)} sx={{ mt: 2 }}>
                                                 Submit
                                             </Button>
                                         </Box>
