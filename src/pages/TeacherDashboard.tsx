@@ -2,6 +2,7 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
 import ChatBot from '../components/ChatBot';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
 
 interface TeacherDashboardProps {
   selectedAction: string;
@@ -23,13 +24,13 @@ const fetchChatHistory = async () => {
 
 const fetchSubmissions = async () => {
   try {
-    const response = await fetch('http://localhost:5000/api/submissions/0');
+    const response = await fetch('http://localhost:5000/api/submissions/1');
     if (!response.ok) {
       throw new Error('Failed to fetch submissions');
     }
     const data = await response.json();
     console.log(data)
-    return data;
+    return data.submissions;
   } catch (error) {
     console.error('Error fetching submissions:', error);
     return null;
@@ -38,13 +39,13 @@ const fetchSubmissions = async () => {
 
 const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ selectedAction }) => {
   const [chatHistory, setChatHistory] = React.useState<string>("");
-  const [submissions, setSubmissions] = React.useState<any[]>([]);
+  const [submissions, setSubmissions] = React.useState<any>({});
 
   React.useEffect(() => {
     const fetchData = async () => {
       const history = await fetchChatHistory();
       if (history) {
-        setChatHistory(history);
+        setChatHistory(history.answer);
       }
     };
     fetchData();
@@ -69,7 +70,28 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ selectedAction }) =
         <Typography variant="body1">Upload Assignment form goes here.</Typography>
       )}
       {selectedAction === "viewSubmissions" && (
-        <Typography variant="body1">{submissions}</Typography>
+        <Typography variant="body1">
+          <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>ID</TableCell>
+                <TableCell>Score</TableCell>
+                <TableCell>Email</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {submissions.map((student:any) => (
+                <TableRow key={student.id}>
+                  <TableCell>{student.id}</TableCell>
+                  <TableCell>{student.score}</TableCell>
+                  <TableCell>{student.student_email}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        </Typography>
       )}
       {selectedAction === "uploadLectures" && (
         <Typography variant="body1">Upload Lectures form goes here.</Typography>

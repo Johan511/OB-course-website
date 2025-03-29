@@ -32,6 +32,7 @@ const CourseDashboard: React.FC<CourseDashboardProps> = ({ courseSidebarOpen, to
             headers: {
                 'Content-Type': 'application/json',
             },
+            credentials: "include",
             body: JSON.stringify(selectedAnswers),
         })
             .then((response) => response.json())
