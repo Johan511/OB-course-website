@@ -1,7 +1,7 @@
 // src/components/ChatBot.tsx
-import React, { useState } from 'react';
+import React, { use, useState, } from 'react';
 import { Paper, Typography, TextField, Button, Box, Chip } from '@mui/material';
-// import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 const ChatBot: React.FC = () => {
   const likelyPrompts = [
@@ -14,6 +14,8 @@ const ChatBot: React.FC = () => {
 
   const [messages, setMessages] = useState<string[]>([]);
   const [input, setInput] = useState<string>('');
+
+  const location = useLocation();
 
   const handlePromptClick = (prompt: string) => {
     setInput(prompt);
@@ -30,7 +32,7 @@ const ChatBot: React.FC = () => {
     const response = await fetch('http://localhost:5000/api/rag/query', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query: input, context: ""})
+      body: JSON.stringify({ query: input, location: location.pathname }),
     });
     const data = await response.json();
 
