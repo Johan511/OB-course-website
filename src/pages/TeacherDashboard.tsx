@@ -22,6 +22,18 @@ const fetchChatHistory = async () => {
 };
 
 const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ selectedAction }) => {
+  const [chatHistory, setChatHistory] = React.useState<string>("");
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      const history = await fetchChatHistory();
+      if (history) {
+        setChatHistory(history);
+      }
+    };
+    fetchData();
+  }, []);
+
   return (
     <Box>
       <Typography variant="h4" gutterBottom>
