@@ -10,7 +10,7 @@ interface TeacherDashboardProps {
 
 const fetchChatHistory = async () => {
   try {
-    const response = await fetch('http://localhost:5000/api/chat_history');
+    const response = await fetch('http://localhost:5000/api/chat_history', { credentials: "include" });
     if (!response.ok) {
       throw new Error('Failed to fetch chat history');
     }
@@ -24,7 +24,7 @@ const fetchChatHistory = async () => {
 
 const fetchSubmissions = async () => {
   try {
-    const response = await fetch('http://localhost:5000/api/submissions/1');
+    const response = await fetch('http://localhost:5000/api/submissions/1', { credentials: "include" });
     if (!response.ok) {
       throw new Error('Failed to fetch submissions');
     }
@@ -39,7 +39,7 @@ const fetchSubmissions = async () => {
 
 const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ selectedAction }) => {
   const [chatHistory, setChatHistory] = React.useState<string>("");
-  const [submissions, setSubmissions] = React.useState<any>({});
+  const [submissions, setSubmissions] = React.useState<any>(false);
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -72,25 +72,25 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ selectedAction }) =
       {selectedAction === "viewSubmissions" && (
         <Typography variant="body1">
           <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>ID</TableCell>
-                <TableCell>Score</TableCell>
-                <TableCell>Email</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {submissions.map((student:any) => (
-                <TableRow key={student.id}>
-                  <TableCell>{student.id}</TableCell>
-                  <TableCell>{student.score}</TableCell>
-                  <TableCell>{student.student_email}</TableCell>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>ID</TableCell>
+                  <TableCell>Score</TableCell>
+                  <TableCell>Email</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {submissions && submissions.map((student: any) => (
+                  <TableRow key={student.id}>
+                    <TableCell>{student.id}</TableCell>
+                    <TableCell>{student.score}</TableCell>
+                    <TableCell>{student.student_email}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </Typography>
       )}
       {selectedAction === "uploadLectures" && (
